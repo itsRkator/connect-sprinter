@@ -1,46 +1,183 @@
-# Getting Started with Create React App
+# LinkedIn Auto Connection Chrome Extension
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This Chrome extension automates sending connection requests on LinkedIn. Follow the steps below to set up, run, build, and install the extension.
 
-## Available Scripts
+---
+
+### Table of Contents
+
+1. [Project Setup](#project-setup)
+2. [Folder Structure](#folder-structure)
+3. [Available Scripts](#available-scripts)
+4. [Running the Application](#running-the-application)
+5. [Building the Extension](#building-the-extension)
+6. [Creating a CRX File](#creating-a-crx-file)
+7. [Loading the Extension into Chrome](#loading-the-extension-into-chrome)
+8. [Generating an Installable Extension](#generating-an-installable-extension)
+
+---
+
+### Project Setup
+
+1. **Clone the Repository:**
+
+   ```bash
+   git clone https://github.com/itsRkator/connect-sprinter.git
+   cd linkedin-auto-connection
+   ```
+
+2. **Install Dependencies:**
+
+   ```bash
+   npm install
+   ```
+
+3. **Install Chrome Types for Development (Optional but Recommended):**
+
+   ```bash
+   npm install --save-dev @types/chrome
+   ```
+
+---
+
+### Folder Structure
+
+The main folder structure is as follows:
+
+```plaintext
+linkedin-auto-connection/
+├── build/                         # Built extension files
+│   ├── static/
+│   ├── asset-manifest.json
+│   ├── background.js
+│   ├── content.js
+│   ├── favicon.ico
+│   ├── index.html
+│   ├── logo192.png
+│   ├── logo512.png
+│   ├── manifest.json
+│   └── robots.txt
+├── node_modules/
+├── public/                        # Public files for the React application
+│   ├── favicon.ico
+│   ├── index.html
+│   ├── logo192.png
+│   ├── logo512.png
+│   ├── manifest.json
+│   └── robots.txt
+├── src/                           # Source files
+│   ├── Popup/
+│   ├── App.test.tsx
+│   ├── App.tsx
+│   ├── background.ts
+│   ├── content.ts
+│   ├── index.css
+│   ├── index.tsx
+│   ├── logo.svg
+│   ├── react-app-env.d.ts
+│   ├── reportWebVitals.ts
+│   └── setupTests.ts
+├── .gitignore
+├── LICENSE
+├── package-lock.json
+├── package.json
+├── README.md
+└── tsconfig.json
+```
+
+---
+
+### Available Scripts
 
 In the project directory, you can run:
 
-### `npm start`
+- **`npm start`**: Runs the app in development mode.
+- **`npm run build`**: Builds the project for production, creating files under the `build/` directory.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+---
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+### Running the Application
 
-### `npm test`
+To run the application in development mode:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```bash
+npm start
+```
 
-### `npm run build`
+This will start a local development server and open the app in the browser. The page will reload automatically if you make changes to the source files.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Building the Extension
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+To prepare the extension for Chrome, you’ll need to build the project:
 
-### `npm run eject`
+```bash
+npm run build
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+This command creates optimized files under the `build` directory. These files will be used to load the extension into Chrome or to create an installable `.crx` file.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+---
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### Creating a CRX File
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+To generate an installable `.crx` file:
 
-## Learn More
+1. **Install `crx3` globally** (if you haven’t done so already):
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+   ```bash
+   npm install -g crx3
+   ```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+2. **Navigate to the `build` directory**:
+
+   ```bash
+   cd build
+   ```
+
+3. **Refactor the generated content.js and background.js**
+   Navigate to the content.js and background.js files in the generated `build` directory and remove the following line from both mentioned files before loading in the chrome:
+
+   ```
+   exports.__esModule = true;
+   ```
+
+4. **Use `crx3` to pack the extension**, generating a `.pem` key if one does not exist:
+
+   ```bash
+   crx3 --pack . --out linkedin-auto-connection.crx
+   ```
+
+   This command will create two files:
+
+   - **linkedin-auto-connection.crx**: The installable extension file.
+   - **linkedin-auto-connection.pem**: The private key file used for signing the extension.
+
+> **Note**: Keep the `.pem` file safe as it is necessary for future updates to this extension.
+
+---
+
+### Loading the Extension into Chrome
+
+To test the extension in Chrome:
+
+1. Open Chrome and go to **chrome://extensions/**.
+2. Enable **Developer mode** in the top-right corner.
+3. Click **Load unpacked** and select the `build` directory.
+
+This will load the extension as an unpacked extension, allowing you to test its functionality directly in the browser.
+
+---
+
+### Generating an Installable Extension
+
+To generate a fully installable `.crx` file, follow these steps:
+
+1. **Create the CRX File**: As outlined above, use `crx3` to package the `build` directory into a `.crx` file. The `.crx` file serves as your installable extension file.
+
+2. **Distribute the CRX**: Share the `.crx` file with users who wish to install the extension by dragging it into the Chrome **Extensions** page or by loading it directly.
+
+---
+
+> **Note**: Since this extension is not hosted on the Chrome Web Store, you may receive a warning when installing it, stating that it was added without going through the Chrome Web Store.
